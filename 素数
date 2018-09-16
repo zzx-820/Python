@@ -1,0 +1,38 @@
+#求10万内的所有素数(效率问题要考虑）
+# for x in range(2,100000):
+#     for i in range(2,x):
+#         if x % i == 0:
+#             break
+#     else:
+#         print(x)
+
+#method 2
+#for x in range(2,1000000):
+#     for i in range(2,int(x ** 0.5)+1):
+#         if x % i == 0:
+#             break
+#     else:
+#          print(x)
+
+#method 3
+#for x in range(3,10000,2): # 舍弃掉所有偶数
+#     for i in range(3, int(x ** 0.5) + 1, 2): # 为什么从3开始，且step为2？
+#         if x % i == 0:
+#             break
+#         else:
+#             print(x)
+#注：此次设想中一次运行完事，其中将一次偶数全部排出抛弃，一次开辟内存空间，减少前两种每次都得开辟内存空间的问题，效率明显提升
+
+#method  4
+#for x in range(3, 100000, 2): # 舍弃掉所有偶数
+#     if x > 10 and x % 10 == 5: # 所有大于10的质数中，个位数只有1,3,7,9。意思就是大于5，结尾是5就能被5
+# #整除了
+#         continue
+#     for i in range(3, int(x ** 0.5) + 1, 2):
+#         if x % i == 0:
+#             break
+#         else:
+#             count += 1
+#             print(x, count) # 9592
+
+#此次加入导入时间来计算究竟谁更快：
