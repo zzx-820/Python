@@ -1,4 +1,8 @@
-#缩进我没仔细调，大家看了自己调一下。
+#缩进我没仔细调，大家看了自己调一下。#正 面九九乘法
+#[print('{}*{} = {:<3}'.format(j,i,j*i),end='\n'
+#      if i==j else '') for i in range(1,10)for j in range(1,i+1)]
+
+
 #打印九九乘法表方阵的上半部分
 #method1
 for i in range(1,10):
