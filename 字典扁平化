@@ -1,0 +1,16 @@
+#把一个字典扁平化， 源字典 {'a':{'b':1,'c':2}, 'd':{'e':3,'f':{'g':4}}}
+#思路：将字典变成kv对
+source = {'a': {'b': 1, 'c': 2}, 'd': {'e': 3, 'f': {'g': 4}}}
+# target = {}
+
+# def fun(l1, targetKey=''):
+#     for k, v in l1.items():
+#         if isinstance(v, dict):
+#             fun(v, targetKey=targetKey + k + '.')
+#         else:
+#             target[targetKey + k] = v
+ 
+ 
+# fun(source)
+# print(target)
+
