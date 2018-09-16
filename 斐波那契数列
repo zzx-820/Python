@@ -1,0 +1,31 @@
+#斐波那契数列，100以内
+# # 斐波那契数列：1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144, ...
+## 如果设F(n）为该数列的第n项（n∈N*），那么这句话可以写成如下形式：:F(n)=F(n-1)+F(n-2)
+# F(0)=0，F(1)=1, F(n)=F(n-1)+F(n-2)
+# 这是一个线性递推数列
+#最简单写法，其中有封装和结构的思想
+print(0)
+print(1)
+a = 0
+b = 1
+while True :
+    c = a + b
+    if c > 100 : break
+    a = b
+    b = c
+    print(c)
+求斐波那契数列第101项 
+# a = 1
+# b = 1
+# index = 2
+# print('{0},{1}'.format(0,0))
+# print('{0},{1}'.format(1,1))
+# print('{0},{1}'.format(2,1))
+# while True :
+#     c = a + b
+#     a = b
+#     b = c
+#     index += 1
+#     print('{0},{1}'.format(index,c))
+#     if index == 101 :
+#         break
