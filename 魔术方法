@@ -1,0 +1,440 @@
+1.将链表封装成容器
+要求：
+1、提供__getitem__、__iter__、__setitem__方法
+2、使用一个列表，辅助完成上面的方法
+3、进阶：不使用列表，完成上面的方法
+——————————————————————————————————————————————————————————————
+实现类property装饰器，类名称为Property。
+基本结构如下，是一个数据描述器
+class Property: # 数据描述器
+  def __init__(self):
+    pass
+  def __get__(self, instance, owner):
+    pass
+  def __set__(self, instance, value):
+    pass
+class A:
+  def __init__(self, data):
+    self._data = data
+  @Property
+  def data(self):
+    return self._data
+  @data.setter
+  def data(self, value):
+    self._data = value
+——————————————————————————————————————————————————————————
+    原双向链表
+class SingleNode: # 节点保存内容和下一跳
+def __init__(self, item, prev=None, next=None):
+self.item = item
+self.next = next
+self.prev = prev # 增加上一跳
+def __repr__(self):
+#return repr(self.item)
+return "({} <== {} ==> {})".format(
+self.prev.item if self.prev else None,
+self.item,
+self.next.item if self.next else None)
+class LinkedList:
+def __init__(self):
+self.head = None
+self.tail = None # 思考tail属性的作用
+self.size = 0 # 以后实现
+def append(self, item):
+node = SingleNode(item)
+if self.head is None: #
+self.head = node # 设置开头结点，以后不变
+else:
+self.tail.next = node # 当前最后一个结点关联下一跳
+node.prev = self.tail # 前后关联
+self.tail = node # 更新结尾结点
+return self
+def insert(self, index, item):
+if index < 0: # 不接受负数
+raise IndexError('Not negative index {}'.format(index))
+current = None
+for i, node in enumerate(self.iternodes()):
+if i == index: # 找到了
+current = node
+break
+else: # 没有break，尾部追加
+self.append(item)
+return
+# break，找到了
+node = SingleNode(item) # 待加入结点
+prev = current.prev # 前一个
+next = current # 后一个
+if prev is None: # 头部 i == 0
+self.head = node
+else: # 不是首元素
+prev.next = node
+node.prev = prev
+node.next = next
+next.prev = node
+def pop(self): # 尾部移除
+if self.tail is None: # 空
+raise Exception('Empty')
+node = self.tail
+item = node.item
+prev = node.prev
+if prev is None: # only one node
+self.head = None
+self.tail = None
+else:
+prev.next = None
+self.tail = prev
+return item
+def remove(self, index):
+if self.tail is None: # 空
+raise Exception('Empty')
+if index < 0: # 不接受负数
+raise IndexError('Not negative index {}'.format(index))
+current = None
+for i, node in enumerate(self.iternodes()):
+if i == index:
+current = node
+break
+else: # Not Found
+raise IndexError('Wrong index {}.'.format(index))
+prev = current.prev
+next = current.next
+# 4种情况
+if prev is None and next is None: # only one node
+self.head = None
+self.tail = None
+elif prev is None: # 头部
+self.head = next
+next.prev = None
+elif next is None: # 尾部
+self.tail = prev
+prev.next = None
+else: # 在中间
+prev.next = next
+next.prev = prev
+del current
+def iternodes(self, reverse=False):
+current = self.tail if reverse else self.head
+
+while current:
+yield current
+current = current.prev if reverse else current.next
+实现1，
+# 本例采用list提高了链表查询效率，但列表的中间位置的插入、删除效率较低
+class SingleNode: # 节点保存内容和下一跳
+def __init__(self, item, prev=None, next=None):
+self.item = item
+self.next = next
+self.prev = prev # 增加上一跳
+def __repr__(self):
+#return repr(self.item)
+return "({} <== {} ==> {})".format(
+self.prev.item if self.prev else None,
+self.item,
+self.next.item if self.next else None)
+class LinkedList:
+def __init__(self):
+self.head = None
+self.tail = None # 思考tail属性的作用
+self.size = 0 # 以后实现
+self.items = [] # +
+def __len__(self):
+return len(self.items)
+def append(self, item):
+node = SingleNode(item)
+if self.head is None: #
+self.head = node # 设置开头结点，以后不变
+else:
+self.tail.next = node # 当前最后一个结点关联下一跳
+node.prev = self.tail # 前后关联
+self.tail = node # 更新结尾结点
+self.items.append(node) # +
+return self
+def insert(self, index, item):
+if index < 0: # 不接受负数
+raise IndexError('Not negative index {}'.format(index))
+current = None
+for i, node in enumerate(self.iternodes()):
+if i == index: # 找到了
+current = node
+break
+else: # 没有break，尾部追加
+self.append(item)
+return
+# break，找到了
+node = SingleNode(item)
+prev = current.prev
+next = current
+if prev is None: # 首部
+self.head = node
+else: # 不是首元素
+prev.next = node
+node.prev = prev
+node.next = next
+next.prev = node
+self.items.insert(index, node) # +
+def pop(self):
+if self.tail is None: # 空
+raise Exception('Empty')
+node = self.tail
+item = node.item
+prev = node.prev
+if prev is None: # only one node
+self.head = None
+self.tail = None
+else:
+prev.next = None
+self.tail = prev
+self.items.pop() # +
+return item
+def remove(self, index):
+if self.tail is None: # 空
+raise Exception('Empty')
+if index < 0: # 不接受负数
+raise IndexError('Not negative index {}'.format(index))
+current = None
+for i, node in enumerate(self.iternodes()):
+if i == index:
+current = node
+break
+else: # Not Found
+raise IndexError('Wrong index {}.'.format(index))
+prev = current.prev
+next = current.next
+# 4种情况
+if prev is None and next is None: # only one node
+self.head = None
+self.tail = None
+elif prev is None: # 头部
+self.head = next
+next.prev = None
+elif next is None: # 尾部
+self.tail = prev
+prev.next = None
+else: # 在中间
+prev.next = next
+next.prev = prev
+del current
+self.items.pop(index) # +
+def iternodes(self, reverse=False):
+current = self.tail if reverse else self.head
+while current:
+yield current
+current = current.prev if reverse else current.next
+def __getitem__(self, index):
+return self.items[index] # +
+def __setitem__(self, key, value):
+node = self[key] # +
+node.item = value # +
+def __iter__(self):
+#return self.iternodes()
+return iter(self.items) # +
+ll = LinkedList()
+ll.append('abc')
+ll.append(1)
+ll.append(2)
+ll.append(3)
+ll.append(4)
+ll.append(5)
+ll.append('def')
+print(ll.head, ll.tail)
+for x in ll.iternodes(True):
+print(x)
+print(ll.items)
+print('=========')
+实现二
+ll.remove(6)
+ll.remove(5)
+ll.remove(0)
+ll.remove(1)
+for x in ll.iternodes():
+print(x)
+print(ll.items)
+print('~~~~~~~~~~~~')
+ll.insert(3, 5)
+ll.insert(20, 'def')
+ll.insert(1,2)
+ll.insert(0,'abc')
+for x in ll.iternodes():
+print(x)
+print(ll.items)
+for x in ll:
+print(x)
+print(ll[5])
+ll[5] = 500
+for x in ll:
+print(x)
+实现2
+# 本例未采用list，使用链表完成插入、删除，但是查询效率低
+class SingleNode: # 节点保存内容和下一跳
+def __init__(self, item, prev=None, next=None):
+self.item = item
+self.next = next
+self.prev = prev # 增加上一跳
+def __repr__(self):
+#return repr(self.item)
+return "({} <== {} ==> {})".format(
+self.prev.item if self.prev else None,
+self.item,
+self.next.item if self.next else None)
+class LinkedList:
+def __init__(self):
+self.head = None
+self.tail = None # 思考tail属性的作用
+self.__size = 0 # 长度
+def __len__(self):
+return self.__size
+def append(self, item):
+node = SingleNode(item)
+if self.head is None: #
+self.head = node # 设置开头结点，以后不变
+else:
+self.tail.next = node # 当前最后一个结点关联下一跳
+node.prev = self.tail # 前后关联
+self.tail = node # 更新结尾结点
+self.__size += 1
+return self
+def insert(self, index, item):
+if index < 0: # 不接受负数
+raise IndexError('Not negative index {}'.format(index))
+current = None
+for i, node in enumerate(self.iternodes()):
+if i == index: # 找到了
+current = node
+break
+else: # 没有break，尾部追加
+self.append(item)
+return
+# break，找到了
+node = SingleNode(item)
+prev = current.prev
+next = current
+if prev is None: # 首部
+self.head = node
+else: # 不是首元素
+prev.next = node
+node.prev = prev
+node.next = next
+next.prev = node
+self.__size += 1
+def pop(self):
+if self.tail is None: # 空
+raise Exception('Empty')
+node = self.tail
+item = node.item
+prev = node.prev
+if prev is None: # only one node
+self.head = None
+self.tail = None
+else:
+prev.next = None
+self.tail = prev
+self.__size -= 1
+return item
+def remove(self, index):
+if self.tail is None: # 空
+raise Exception('Empty')
+if index < 0: # 不接受负数
+raise IndexError('Not negative index {}'.format(index))
+current = None
+for i, node in enumerate(self.iternodes()):
+if i == index:
+current = node
+break
+else: # Not Found
+raise IndexError('Wrong index {}.'.format(index))
+prev = current.prev
+next = current.next
+# 4种情况
+if prev is None and next is None: # only one node
+self.head = None
+self.tail = None
+elif prev is None: # 头部
+self.head = next
+next.prev = None
+elif next is None: # 尾部
+self.tail = prev
+prev.next = None
+else: # 在中间
+prev.next = next
+next.prev = prev
+del current
+self.__size -= 1
+def iternodes(self, reverse=False):
+current = self.tail if reverse else self.head
+while current:
+yield current
+current = current.prev if reverse else current.next
+def __getitem__(self, index): # 支持正负索引
+reverse = True if index < 0 else False
+start = 1 if index < 0 else 0 # 负数从-1开始
+for i, node in enumerate(self.iternodes(reverse), start):
+if i == abs(index):
+return node
+属性装饰器的实现
+else:
+raise IndexError
+def __setitem__(self, index, value):
+self[index].item = value
+# def __iter__(self):
+# return self.iternodes()
+__iter__ = iternodes
+ll = LinkedList()
+ll.append('abc')
+ll.append(1)
+ll.append(2)
+ll.append(3)
+ll.append(4)
+ll.append(5)
+ll.append('def')
+print(ll.head, ll.tail)
+for x in ll.iternodes(True):
+print(x)
+print('=========')
+ll.remove(6)
+ll.remove(5)
+ll.remove(0)
+ll.remove(1)
+for x in ll.iternodes():
+print(x)
+print('~~~~~~~~~~~~')
+ll.insert(3, 5)
+ll.insert(20, 'def')
+ll.insert(1,2)
+ll.insert(0,'abc')
+for x in ll.iternodes():
+print(x)
+print(ll[-4])
+ll[-4] = 300
+ll[4] = 400
+for x in ll:
+print(x)
+实现3
+class Property: # 数据描述器
+def __init__(self, fget, fset=None):
+self.fget = fget
+self.fset = fset
+def __get__(self, instance, owner):
+if instance is not None:
+return self.fget(instance)
+return self
+def __set__(self, instance, value):
+if callable(self.fset):
+self.fset(instance, value)
+else:
+raise AttributeError("{} can not assign.".format(self.fset.__name__))
+def setter(self, fn):
+self.fset = fn # 注意这是为实例增加属性，对应一个函数，不会绑定
+return self
+class A:
+def __init__(self, data):
+self._data = data
+@Property
+def data(self):
+return self._data
+@data.setter
+def data(self, value):
+self._data = value
+a = A('100')
+print(a.data)
+a.data = 'mn'
+print(a.data)
